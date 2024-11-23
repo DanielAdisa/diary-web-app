@@ -2,32 +2,42 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { use } from 'react';
 import { getEntryById, updateEntry, DiaryEntry } from '../../../lib/storage';
 
+// Props type for the dynamic route
 type EditEntryPageProps = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 };
 
 export default function EditEntryPage({ params }: EditEntryPageProps) {
+  // Unwrap the params Promise
+  const { id } = use(params);
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const router = useRouter();
 
   useEffect(() => {
+    // Fetch the diary entry by its ID
     const fetchEntry = async () => {
-      const entry = await getEntryById(params.id);
-      if (entry) {
-        setTitle(entry.title);
-        setContent(entry.content);
-      } else {
-        alert('Entry not found.');
+      try {
+        const entry = await getEntryById(id);
+        if (entry) {
+          setTitle(entry.title);
+          setContent(entry.content);
+        } else {
+          alert('Entry not found.');
+          router.push('/');
+        }
+      } catch (error) {
+        console.error('Failed to fetch entry:', error);
         router.push('/');
       }
     };
+
     fetchEntry();
-  }, [params.id, router]);
+  }, [id, router]);
 
   const handleUpdate = async () => {
     if (!title || !content) {
@@ -36,18 +46,23 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
     }
 
     const updatedEntry: DiaryEntry = {
-      id: params.id,
+      id,
       title,
       content,
       date: new Date().toISOString(),
     };
 
-    await updateEntry(updatedEntry);
-    router.push('/');
+    try {
+      await updateEntry(updatedEntry);
+      router.push('/');
+    } catch (error) {
+      console.error('Failed to update entry:', error);
+      alert('Something went wrong. Please try again.');
+    }
   };
 
   return (
-    <div>
+    <div className="p-4">
       <h1 className="mb-4 text-3xl font-bold">Edit Entry</h1>
       <input
         type="text"
@@ -64,7 +79,7 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
       />
       <button
         onClick={handleUpdate}
-        className="px-4 py-2 text-white rounded bg-primary"
+        className="px-4 py-2 text-white bg-blue-500 rounded"
       >
         Update Entry
       </button>

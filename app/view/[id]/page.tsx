@@ -2,56 +2,68 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { use } from 'react'; // To unwrap the params Promise
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
 
 type ViewEntryPageProps = {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>; // params is now a Promise
 };
 
 export default function ViewEntryPage({ params }: ViewEntryPageProps) {
+  // Unwrap the params Promise to get the `id`
+  const { id } = use(params);
+
   const [entry, setEntry] = useState<DiaryEntry | null>(null);
   const router = useRouter();
 
-  // Using React.use() to unwrap params
   useEffect(() => {
     const fetchEntry = async () => {
-      const fetchedEntry = await getEntryById(params.id);  // safely access params.id
-      if (fetchedEntry) {
-        setEntry(fetchedEntry);
-      } else {
-        alert('Entry not found.');
+      try {
+        const fetchedEntry = await getEntryById(id); // Use unwrapped `id`
+        if (fetchedEntry) {
+          setEntry(fetchedEntry);
+        } else {
+          alert('Entry not found.');
+          router.push('/');
+        }
+      } catch (error) {
+        console.error('Error fetching entry:', error);
         router.push('/');
       }
     };
+
     fetchEntry();
-  }, [params, router]);
+  }, [id, router]); // Dependency on unwrapped `id`
 
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this entry?')) {
-      await deleteEntryById(params.id);  // safely access params.id
-      router.push('/');
+      try {
+        await deleteEntryById(id); // Use unwrapped `id`
+        router.push('/');
+      } catch (error) {
+        console.error('Error deleting entry:', error);
+        alert('Failed to delete entry. Please try again.');
+      }
     }
   };
 
   if (!entry) return <div>Loading...</div>;
 
   return (
-    <div>
+    <div className="p-4">
       <h1 className="mb-4 text-3xl font-bold">{entry.title}</h1>
       <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
       <p className="mt-6">{entry.content}</p>
       <div className="flex gap-4">
         <button
           onClick={handleDelete}
-          className="px-4 py-2 text-white rounded bg-danger"
+          className="px-4 py-2 text-white bg-red-500 rounded"
         >
           Delete Entry
         </button>
         <button
           onClick={() => router.push(`/edit/${entry.id}`)}
-          className="px-4 py-2 text-white rounded bg-primary"
+          className="px-4 py-2 text-white bg-blue-500 rounded"
         >
           Edit Entry
         </button>
