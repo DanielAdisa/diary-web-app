@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { saveEntry } from '../../lib/storage';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
-import Button from '@/components/Button';
+import { Button } from '@/components/ui/button';
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState('');

@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { getEntryById, updateEntry, DiaryEntry } from '../../../lib/storage';
-import Button from '@/components/Button';
+import {Button} from '@/components/ui/button';
 
 // Props type for the dynamic route
 type EditEntryPageProps = {

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react'; // To unwrap the params Promise
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
-import Button from '@/components/Button';
+import {Button} from '@/components/ui/button';
 
 type ViewEntryPageProps = {
   params: Promise<{ id: string }>; // params is now a Promise
