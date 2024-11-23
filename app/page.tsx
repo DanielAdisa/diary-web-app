@@ -6,7 +6,6 @@ import EntryCard from '../components/EntryCard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 
-
 export default function HomePage() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
@@ -32,7 +31,9 @@ export default function HomePage() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {entries.map((entry) => (
-            <EntryCard key={entry.id} entry={entry} onDelete={handleDelete} />
+            <Link key={entry.id} href={`/view/${entry.id}`}>
+              <EntryCard entry={entry} onDelete={handleDelete} />
+            </Link>
           ))}
         </div>
       )}

@@ -5,6 +5,7 @@ export type DiaryEntry = {
   title: string;
   content: string;
   date: string;
+  imageUrls: string[]; // Array of image URLs
 };
 
 // Save a new entry

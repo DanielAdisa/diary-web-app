@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react'; // To unwrap the params Promise
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
-import {Button} from '@/components/ui/button';
+import { Button } from '@/components/ui/button';
+import Image from 'next/image'; // Importing Image component
 
 type ViewEntryPageProps = {
   params: Promise<{ id: string }>; // params is now a Promise
@@ -15,6 +16,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
   const { id } = use(params);
 
   const [entry, setEntry] = useState<DiaryEntry | null>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const router = useRouter();
 
   useEffect(() => {
@@ -48,24 +50,58 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
     }
   };
 
+  // Carousel navigation functions
+  const goToNextImage = () => {
+    if (entry && entry.imageUrls.length > 0) {
+      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % entry.imageUrls.length);
+    }
+  };
+
+  const goToPreviousImage = () => {
+    if (entry && entry.imageUrls.length > 0) {
+      setCurrentImageIndex((prevIndex) => (prevIndex - 1 + entry.imageUrls.length) % entry.imageUrls.length);
+    }
+  };
+
   if (!entry) return <div>Loading...</div>;
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-3xl font-bold text-center ">{entry.title}</h1>
+      <h1 className="mb-4 text-3xl font-bold text-center">{entry.title}</h1>
       <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
-      <p className="h-auto p-4 mt-6 rounded-sm text text-stone-100 bg-stone-950">{entry.content}</p>
+
+      {/* Show images in a carousel if multiple images exist */}
+      {entry.imageUrls && entry.imageUrls.length > 0 && (
+        <div className="relative">
+          <Image
+            src={entry.imageUrls[currentImageIndex]}
+            alt={`Diary Entry Image ${currentImageIndex + 1}`}
+            width={800}
+            height={500}
+            className="w-full h-auto mb-4 rounded-lg"
+          />
+          {/* Carousel navigation buttons */}
+          <button
+            onClick={goToPreviousImage}
+            className="absolute p-2 text-white transform -translate-y-1/2 bg-gray-800 rounded-full left-2 top-1/2"
+          >
+            &#10094;
+          </button>
+          <button
+            onClick={goToNextImage}
+            className="absolute p-2 text-white transform -translate-y-1/2 bg-gray-800 rounded-full right-2 top-1/2"
+          >
+            &#10095;
+          </button>
+        </div>
+      )}
+
+      <p className="h-auto p-4 mt-6 rounded-sm text-stone-100 bg-stone-950">{entry.content}</p>
       <div className="flex items-center justify-between w-full gap-4 mt-10">
-        <Button
-          onClick={handleDelete}
-          className=""
-        >
+        <Button onClick={handleDelete} className="">
           Delete Entry
         </Button>
-        <Button
-          onClick={() => router.push(`/edit/${entry.id}`)}
-          className=""
-        >
+        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="">
           Edit Entry
         </Button>
       </div>
