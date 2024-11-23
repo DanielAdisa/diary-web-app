@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Button from './Button';
 
 export default function EntryCard({
   entry,
@@ -20,12 +21,12 @@ export default function EntryCard({
         >
           View
         </Link>
-        <button
+        <Button
           onClick={() => onDelete(entry.id)}
           className="underline text-danger hover:text-red-600"
         >
           Delete
-        </button>
+        </Button>
       </div>
     </div>
   );

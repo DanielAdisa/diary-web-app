@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react'; // To unwrap the params Promise
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
+import Button from '@/components/Button';
 
 type ViewEntryPageProps = {
   params: Promise<{ id: string }>; // params is now a Promise
@@ -55,18 +56,18 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
       <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
       <p className="mt-6">{entry.content}</p>
       <div className="flex gap-4">
-        <button
+        <Button
           onClick={handleDelete}
           className="px-4 py-2 text-white bg-red-500 rounded"
         >
           Delete Entry
-        </button>
-        <button
+        </Button>
+        <Button
           onClick={() => router.push(`/edit/${entry.id}`)}
           className="px-4 py-2 text-white bg-blue-500 rounded"
         >
           Edit Entry
-        </button>
+        </Button>
       </div>
     </div>
   );

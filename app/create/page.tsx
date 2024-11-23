@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { saveEntry } from '../../lib/storage';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
+import Button from '@/components/Button';
 
 export default function CreateEntryPage() {
   const [title, setTitle] = useState('');
@@ -43,12 +44,12 @@ export default function CreateEntryPage() {
         onChange={(e) => setContent(e.target.value)}
         className="w-full p-2 mb-4 border rounded"
       />
-      <button
+      <Button
         onClick={handleSave}
         className="px-4 py-2 text-white rounded bg-primary"
       >
         Save Entry
-      </button>
+      </Button>
     </div>
   );
 }

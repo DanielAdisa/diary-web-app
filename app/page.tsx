@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { getAllEntries, deleteEntryById, DiaryEntry } from '../lib/storage';
 import EntryCard from '../components/EntryCard';
 import Link from 'next/link';
+import Button from '@/components/Button';
 
 export default function HomePage() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
@@ -35,9 +36,9 @@ export default function HomePage() {
         </div>
       )}
       <Link href="/create">
-        <button className="block px-4 py-2 mx-auto mt-6 text-white rounded bg-primary">
+        <Button className="block px-4 py-2 mx-auto mt-6 text-white rounded bg-primary">
           Create New Entry
-        </button>
+        </Button>
       </Link>
     </div>
   );

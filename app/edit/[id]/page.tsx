@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { use } from 'react';
 import { getEntryById, updateEntry, DiaryEntry } from '../../../lib/storage';
+import Button from '@/components/Button';
 
 // Props type for the dynamic route
 type EditEntryPageProps = {
@@ -77,12 +78,12 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
         onChange={(e) => setContent(e.target.value)}
         className="w-full p-2 mb-4 border rounded"
       />
-      <button
+      <Button
         onClick={handleUpdate}
         className="px-4 py-2 text-white bg-blue-500 rounded"
       >
         Update Entry
-      </button>
+      </Button>
     </div>
   );
 }
