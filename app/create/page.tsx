@@ -36,11 +36,12 @@ export default function CreateEntryPage() {
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full p-2 mb-4 border rounded"
+        className="w-full p-4 mb-4 border rounded"
       />
       <textarea
         placeholder="Content"
         value={content}
+        rows={15}
         onChange={(e) => setContent(e.target.value)}
         className="w-full p-2 mb-4 border rounded"
       />
