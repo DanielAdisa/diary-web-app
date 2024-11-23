@@ -54,17 +54,17 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
     <div className="p-4">
       <h1 className="mb-4 text-3xl font-bold">{entry.title}</h1>
       <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
-      <p className="mt-6">{entry.content}</p>
-      <div className="flex gap-4">
+      <p className="h-auto mt-6 text-center rounded-sm text-stone-50 bg-black/80">{entry.content}</p>
+      <div className="flex gap-4 mt-10">
         <Button
           onClick={handleDelete}
-          className="px-4 py-2 text-white bg-red-500 rounded"
+          className=""
         >
           Delete Entry
         </Button>
         <Button
           onClick={() => router.push(`/edit/${entry.id}`)}
-          className="px-4 py-2 text-white bg-blue-500 rounded"
+          className=""
         >
           Edit Entry
         </Button>
