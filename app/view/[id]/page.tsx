@@ -52,9 +52,9 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
 
   return (
     <div className="p-4">
-      <h1 className="mb-4 text-3xl font-bold">{entry.title}</h1>
+      <h1 className="mb-4 text-3xl font-bold text-center ">{entry.title}</h1>
       <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
-      <p className="h-auto p-4 mt-6 rounded-sm text text-stone-50 bg-black/80">{entry.content}</p>
+      <p className="h-auto p-4 mt-6 rounded-sm text text-stone-100 bg-stone-950">{entry.content}</p>
       <div className="flex items-center justify-between w-full gap-4 mt-10">
         <Button
           onClick={handleDelete}
