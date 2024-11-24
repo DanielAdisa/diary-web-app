@@ -69,14 +69,14 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
   if (!entry) return <div>Loading...</div>;
 
   return (
-    <div className="overflow-hidden md:p-4">
+    <div className="max-w-5xl mx-auto overflow-hidden md:p-4">
       <h1 className="mb-4 text-3xl font-bold text-center">{entry.title}</h1>
       <p className="mb-4 text-center text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
 
       {/* Show images in a carousel if multiple images exist */}
       {entry.imageUrls && entry.imageUrls.length > 0 && (
         <div className="relative">
-          <div className="flex items-center justify-center w-full">
+          <div className="flex items-center justify-center w-2/3 mx-auto">
             <Image
               src={entry.imageUrls[currentImageIndex]}
               alt={`Diary Entry Image ${currentImageIndex + 1}`}
@@ -89,13 +89,13 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
           {/* Carousel navigation buttons */}
           <Button
             onClick={goToPreviousImage}
-            className="absolute left-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:left-2 top-1/2 hover:bg-gray-700"
+            className="absolute w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent -left-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2 hover:bg-gray-700"
           >
             &#10094;
           </Button>
           <Button
             onClick={goToNextImage}
-            className="absolute right-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:right-2 top-1/2 hover:bg-gray-700"
+            className="absolute w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent -right-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2 hover:bg-gray-700"
           >
             &#10095;
           </Button>
