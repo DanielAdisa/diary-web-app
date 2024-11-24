@@ -76,7 +76,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
       {/* Show images in a carousel if multiple images exist */}
       {entry.imageUrls && entry.imageUrls.length > 0 && (
         <div className="relative">
-          <div className="flex items-center justify-center w-2/3 mx-auto">
+          <div className="flex items-center justify-center mx-auto md:w-2/3">
             <Image
               src={entry.imageUrls[currentImageIndex]}
               alt={`Diary Entry Image ${currentImageIndex + 1}`}
