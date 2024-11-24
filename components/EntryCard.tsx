@@ -35,12 +35,12 @@ export default function EntryCard({ entry, onDelete }: EntryCardProps) {
       <p className="mt-2 text-gray-600">{entry.content.slice(0, 100)}...</p>
 
       <div className="flex gap-2 mt-4">
-        <Button
+        {/* <Button
           onClick={() => onDelete(entry.id)}
           className="px-4 py-2 text-white bg-red-500 rounded-md"
         >
           Delete
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

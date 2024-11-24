@@ -63,6 +63,7 @@ export async function updateEntry(updatedEntry: DiaryEntry): Promise<void> {
   await set('diary_entries', updatedEntries);
 }
 
+
 // import { get, set } from 'idb-keyval';
 
 // export type DiaryEntry = {
