@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
 import { Button } from '@/components/ui/button';
@@ -11,17 +11,19 @@ type ViewEntryPageProps = {
 };
 
 export default function ViewEntryPage({ params }: ViewEntryPageProps) {
-  // Unwrap the params Promise to get the `id`
   const { id } = use(params);
 
   const [entry, setEntry] = useState<DiaryEntry | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [audioPlaying, setAudioPlaying] = useState(false);
+  const [audioProgress, setAudioProgress] = useState(0); // Progress in percentage
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const router = useRouter();
 
   useEffect(() => {
     const fetchEntry = async () => {
       try {
-        const fetchedEntry = await getEntryById(id); // Use unwrapped `id`
+        const fetchedEntry = await getEntryById(id);
         if (fetchedEntry) {
           setEntry(fetchedEntry);
         } else {
@@ -35,12 +37,12 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
     };
 
     fetchEntry();
-  }, [id, router]); // Dependency on unwrapped `id`
+  }, [id, router]);
 
   const handleDelete = async () => {
     if (confirm('Are you sure you want to delete this entry?')) {
       try {
-        await deleteEntryById(id); // Use unwrapped `id`
+        await deleteEntryById(id);
         router.push('/');
       } catch (error) {
         console.error('Error deleting entry:', error);
@@ -49,7 +51,34 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
     }
   };
 
-  // Carousel navigation functions
+  const togglePlayPause = () => {
+    if (audioRef.current) {
+      if (audioPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setAudioPlaying(!audioPlaying);
+    }
+  };
+
+  const handleAudioTimeUpdate = () => {
+    if (audioRef.current) {
+      const progress =
+        (audioRef.current.currentTime / audioRef.current.duration) * 100;
+      setAudioProgress(progress || 0);
+    }
+  };
+
+  const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (audioRef.current) {
+      const progressBar = e.currentTarget;
+      const clickX = e.nativeEvent.offsetX;
+      const progress = clickX / progressBar.clientWidth;
+      audioRef.current.currentTime = progress * audioRef.current.duration;
+    }
+  };
+
   const goToNextImage = () => {
     if (entry && entry.imageUrls.length > 0) {
       setCurrentImageIndex((prevIndex) => (prevIndex + 1) % entry.imageUrls.length);
@@ -62,10 +91,6 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
     }
   };
 
-  const handleImageClick = (index: number) => {
-    setCurrentImageIndex(index);
-  };
-
   if (!entry) return <div>Loading...</div>;
 
   return (
@@ -73,7 +98,6 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
       <h1 className="mb-4 text-3xl font-bold text-center">{entry.title}</h1>
       <p className="mb-4 text-center text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
 
-      {/* Show images in a carousel if multiple images exist */}
       {entry.imageUrls && entry.imageUrls.length > 0 && (
         <div className="relative">
           <div className="flex items-center justify-center mx-auto md:w-2/3">
@@ -85,41 +109,42 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
               className="h-auto mb-6 transition-all duration-500 ease-in-out rounded-lg md:mb-4 md:p-4"
             />
           </div>
-          
-          {/* Carousel navigation buttons */}
-          <span
-            onClick={goToPreviousImage}
-            className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -left-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2"
-          >
+          <span onClick={goToPreviousImage} className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -left-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2">
             &#10094;
           </span>
-          <span
-            onClick={goToNextImage}
-            className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -right-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2"
-          >
+          <span onClick={goToNextImage} className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -right-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2">
             &#10095;
           </span>
-
-          {/* Carousel indicators (numbers) */}
-          <div className="absolute flex mb-4 space-x-4 transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
-            <span className="text-xl font-bold text-black">
-              {currentImageIndex + 1} / {entry.imageUrls.length}
-            </span>
-          </div>
         </div>
       )}
 
-      {/* Audio Playback */}
       {entry.audioUrl && (
         <div className="mt-6">
-          <h2 className="mb-2 text-xl font-bold">Audio Recording:</h2>
-          <audio
-            controls
-            src={entry.audioUrl}
-            className="w-full p-4 bg-gray-200 rounded shadow-md"
-          >
-            Your browser does not support the audio element.
-          </audio>
+          <h2 className="mb-4 text-xl font-bold">Audio Recording:</h2>
+          <div className="relative flex items-center w-full max-w-xl p-4 mx-auto bg-gray-100 rounded shadow-lg">
+            <button
+              onClick={togglePlayPause}
+              className="flex items-center justify-center w-12 h-12 p-2 text-white rounded-full shadow-lg bg-stone-900 focus:outline-none"
+            >
+              {audioPlaying ? 'I I' : '▶'}
+            </button>
+            <div
+              className="relative flex-grow h-2 mx-4 bg-gray-300 rounded cursor-pointer"
+              onClick={handleProgressClick}
+            >
+              <div
+                className="absolute top-0 left-0 h-full rounded bg-stone-800"
+                style={{ width: `${audioProgress}%` }}
+              ></div>
+            </div>
+            <audio
+              ref={audioRef}
+              src={entry.audioUrl}
+              onTimeUpdate={handleAudioTimeUpdate}
+              onEnded={() => setAudioPlaying(false)}
+              className="hidden"
+            />
+          </div>
         </div>
       )}
 
