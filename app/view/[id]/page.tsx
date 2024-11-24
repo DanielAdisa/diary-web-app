@@ -87,18 +87,18 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
           </div>
           
           {/* Carousel navigation buttons */}
-          <Button
+          <span
             onClick={goToPreviousImage}
-            className="absolute w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent -left-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2"
+            className="absolute items-center justify-center w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent md:flex -left-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2"
           >
             &#10094;
-          </Button>
-          <Button
+          </span>
+          <span
             onClick={goToNextImage}
-            className="absolute w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent -right-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2"
+            className="absolute items-center justify-center w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent md:flex -right-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2"
           >
             &#10095;
-          </Button>
+          </span>
 
           {/* Carousel indicators (dots) */}
           <div className="absolute flex mb-4 space-x-4 transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
