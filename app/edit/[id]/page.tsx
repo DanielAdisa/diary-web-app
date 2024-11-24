@@ -110,7 +110,7 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
         value={content}
         onChange={(e) => setContent(e.target.value)}
         className="w-full p-2 mb-4 border rounded"
-        rows={6}
+        rows={15}
       />
       <label
         htmlFor="image-upload"
