@@ -89,13 +89,13 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
           {/* Carousel navigation buttons */}
           <span
             onClick={goToPreviousImage}
-            className="absolute items-center justify-center w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent md:flex -left-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2"
+            className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -left-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2"
           >
             &#10094;
           </span>
           <span
             onClick={goToNextImage}
-            className="absolute items-center justify-center w-1/2 h-full text-white transform -translate-y-1/2 bg-transparent md:flex -right-8 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2"
+            className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -right-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2"
           >
             &#10095;
           </span>
