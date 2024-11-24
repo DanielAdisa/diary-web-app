@@ -54,6 +54,7 @@ export default function CreateEntryPage() {
       <textarea
         placeholder="Content"
         value={content}
+        rows={15}
         onChange={(e) => setContent(e.target.value)}
         className="w-full p-4 mb-4 border rounded"
       />
