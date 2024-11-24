@@ -25,7 +25,7 @@ export default function HomePage() {
 
   return (
     <div className='overflow-hidden'>
-      <h1 className="mb-6 text-3xl font-bold">Diary Entries</h1>
+      <h1 className="p-4 mb-6 text-3xl font-bold rounded-lg bg-stone-950 text-stone-50">Diary Entries</h1>
       {entries.length === 0 ? (
         <p className="text-gray-600">No entries yet. Start by creating one!</p>
       ) : (

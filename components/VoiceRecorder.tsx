@@ -2,6 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { fileToBase64 } from '../lib/utils'; // Base64 utility
+import { FaPlay } from "react-icons/fa6";
+import { FaRegCirclePause } from "react-icons/fa6";
+import { FaPause } from "react-icons/fa6";
+import { Button } from './ui/button';
+import { FaRecordVinyl } from "react-icons/fa6";
+
+
+
 
 export default function VoiceRecorder({ onAudioReady }: { onAudioReady: (audio: string) => void }) {
   const [recording, setRecording] = useState(false);
@@ -178,20 +186,21 @@ export default function VoiceRecorder({ onAudioReady }: { onAudioReady: (audio: 
       )}
 
       <div className="flex gap-4">
-        <button
+        <Button
           onClick={startRecording}
           disabled={recording}
-          className="px-4 py-2 text-white bg-green-500 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-red-500 rounded-sm text-stone-50"
         >
-          Start Recording
-        </button>
-        <button
+          
+          <FaRecordVinyl />
+        </Button>
+        <Button
           onClick={stopRecording}
           disabled={!recording}
-          className="px-4 py-2 text-white bg-red-500 rounded disabled:opacity-50"
+          className="px-4 py-2 bg-yellow-600 rounded-sm text-stone-50"
         >
-          Stop Recording
-        </button>
+          <FaPause />
+        </Button>
       </div>
 
       {error && <p className="mt-4 text-red-500">{error}</p>}

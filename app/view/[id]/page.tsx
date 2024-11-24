@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image'; // Importing Image component
+import { FaPlay } from "react-icons/fa6";
+import { FaRegCirclePause } from "react-icons/fa6";
+import { FaPause } from "react-icons/fa6";
 
 type ViewEntryPageProps = {
   params: Promise<{ id: string }>; // params is now a Promise
@@ -109,10 +112,10 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
               className="h-auto mb-6 transition-all duration-500 ease-in-out rounded-lg md:mb-4 md:p-4"
             />
           </div>
-          <span onClick={goToPreviousImage} className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -left-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2">
+          <span onClick={goToPreviousImage} className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent cursor-pointer md:text-white md:flex -left-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:left-2 top-1/2">
             &#10094;
           </span>
-          <span onClick={goToNextImage} className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent md:text-white md:flex -right-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2">
+          <span onClick={goToNextImage} className="absolute items-center justify-center w-1/2 h-full text-transparent transform -translate-y-1/2 bg-transparent cursor-pointer md:text-white md:flex -right-0 md:p-5 md:bg-gray-800 md:rounded-full md:h-0 md:w-0 md:right-2 top-1/2">
             &#10095;
           </span>
         </div>
@@ -121,15 +124,15 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
       {entry.audioUrl && (
         <div className="mt-6">
           <h2 className="mb-4 text-xl font-bold">Audio Recording:</h2>
-          <div className="relative flex items-center w-full max-w-xl p-4 mx-auto bg-gray-100 rounded shadow-lg">
+          <div className="relative flex items-center w-full max-w-xl p-4 mx-auto shadow-lg rounded-xl bg-black/20">
             <button
               onClick={togglePlayPause}
-              className="flex items-center justify-center w-12 h-12 p-2 text-white rounded-full shadow-lg bg-stone-900 focus:outline-none"
+              className="flex items-center justify-center w-12 h-12 p-2 font-bold text-white rounded-full shadow-lg bg-stone-900 focus:outline-none"
             >
-              {audioPlaying ? 'I I' : '▶'}
+              {audioPlaying ? <FaPause />   : <FaPlay />  }
             </button>
             <div
-              className="relative flex-grow h-2 mx-4 bg-gray-300 rounded cursor-pointer"
+              className="relative flex-grow h-2 mx-4 rounded cursor-pointer bg-stone-300"
               onClick={handleProgressClick}
             >
               <div
@@ -154,7 +157,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
         <Button onClick={handleDelete} className="bg-red-500">
           Delete Entry
         </Button>
-        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="bg-green-500">
+        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="bg-yellow-500">
           Edit Entry
         </Button>
       </div>
