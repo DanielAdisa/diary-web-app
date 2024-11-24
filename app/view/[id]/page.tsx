@@ -82,7 +82,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
               alt={`Diary Entry Image ${currentImageIndex + 1}`}
               width={800}
               height={500}
-              className="h-auto mb-4 transition-all duration-500 ease-in-out rounded-lg md:p-4"
+              className="h-auto mb-6 transition-all duration-500 ease-in-out rounded-lg md:mb-4 md:p-4"
             />
           </div>
           
@@ -100,15 +100,11 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
             &#10095;
           </span>
 
-          {/* Carousel indicators (dots) */}
+          {/* Carousel indicators (numbers) */}
           <div className="absolute flex mb-4 space-x-4 transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
-            {entry.imageUrls.map((_, index) => (
-              <span
-                key={index}
-                onClick={() => handleImageClick(index)}
-                className={` md:h-5 h-3 md:w-5 w-3 rounded-full ${index === currentImageIndex ? 'bg-primary cursor-pointer' : 'bg-gray-300 cursor-pointer'}`}
-              />
-            ))}
+            <span className="text-xl font-bold text-black">
+              {currentImageIndex + 1} / {entry.imageUrls.length}
+            </span>
           </div>
         </div>
       )}
@@ -116,10 +112,10 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
       <p className="h-auto p-4 mt-6 rounded-sm text-stone-100 bg-stone-950">{entry.content}</p>
 
       <div className="flex items-center justify-between w-full gap-4 mt-10">
-        <Button onClick={handleDelete} className="bg-red-500 ">
+        <Button onClick={handleDelete} className="bg-red-500">
           Delete Entry
         </Button>
-        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="bg-green-500 ">
+        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="bg-green-500">
           Edit Entry
         </Button>
       </div>
