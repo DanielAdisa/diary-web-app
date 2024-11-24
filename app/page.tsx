@@ -38,8 +38,8 @@ export default function HomePage() {
         </div>
       )}
       <Link href="/create">
-        <Button className="absolute z-20 block w-12 h-12 px-4 py-2 mx-auto mt-6 rounded-md bottom-[90px] right-2 text-stone-50 bg-stone-950">
-          +
+        <Button className="block w-full px-4 py-2 mx-auto mt-6 rounded-md text-stone-50 bg-stone-950">
+          Create New Entry
         </Button>
       </Link>
     </div>
