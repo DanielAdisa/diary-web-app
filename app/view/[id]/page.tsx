@@ -1,8 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { use } from 'react'; // To unwrap the params Promise
 import { getEntryById, deleteEntryById, DiaryEntry } from '../../../lib/storage';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image'; // Importing Image component
@@ -63,40 +62,59 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
     }
   };
 
+  const handleImageClick = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
   if (!entry) return <div>Loading...</div>;
 
   return (
-    <div className="md:p-4 " >
+    <div className="md:p-4">
       <h1 className="mb-4 text-3xl font-bold text-center">{entry.title}</h1>
-      <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
+      <p className="mb-4 text-center text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
 
       {/* Show images in a carousel if multiple images exist */}
       {entry.imageUrls && entry.imageUrls.length > 0 && (
         <div className="relative">
-          <Image
-            src={entry.imageUrls[currentImageIndex]}
-            alt={`Diary Entry Image ${currentImageIndex + 1}`}
-            width={800}
-            height={500}
-            className="h-auto p-4 mb-4 rounded-lg md:w-full"
-          />
+          <div className="flex items-center justify-center w-full">
+            <Image
+              src={entry.imageUrls[currentImageIndex]}
+              alt={`Diary Entry Image ${currentImageIndex + 1}`}
+              width={800}
+              height={500}
+              className="h-auto mb-4 transition-all duration-500 ease-in-out rounded-lg md:p-4"
+            />
+          </div>
+          
           {/* Carousel navigation buttons */}
-          <button
+          <Button
             onClick={goToPreviousImage}
-            className="absolute left-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:left-2 top-1/2"
+            className="absolute left-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:left-2 top-1/2 hover:bg-gray-700"
           >
             &#10094;
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={goToNextImage}
-            className="absolute right-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:right-2 top-1/2"
+            className="absolute right-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:right-2 top-1/2 hover:bg-gray-700"
           >
             &#10095;
-          </button>
+          </Button>
+
+          {/* Carousel indicators (dots) */}
+          <div className="absolute flex mb-4 space-x-4 transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
+            {entry.imageUrls.map((_, index) => (
+              <span
+                key={index}
+                onClick={() => handleImageClick(index)}
+                className={` md:h-5 h-3 md:w-5 w-3 rounded-full ${index === currentImageIndex ? 'bg-primary cursor-pointer' : 'bg-gray-300 cursor-pointer'}`}
+              />
+            ))}
+          </div>
         </div>
       )}
 
       <p className="h-auto p-4 mt-6 rounded-sm text-stone-100 bg-stone-950">{entry.content}</p>
+
       <div className="flex items-center justify-between w-full gap-4 mt-10">
         <Button onClick={handleDelete} className="">
           Delete Entry
