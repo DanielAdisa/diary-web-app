@@ -69,7 +69,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
   if (!entry) return <div>Loading...</div>;
 
   return (
-    <div className="md:p-4">
+    <div className="overflow-hidden md:p-4">
       <h1 className="mb-4 text-3xl font-bold text-center">{entry.title}</h1>
       <p className="mb-4 text-center text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
 
@@ -101,7 +101,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
           </Button>
 
           {/* Carousel indicators (dots) */}
-          <div className="absolute flex mb-4 space-x-4 overflow-hidden transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
+          <div className="absolute flex mb-4 space-x-4 transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
             {entry.imageUrls.map((_, index) => (
               <span
                 key={index}
