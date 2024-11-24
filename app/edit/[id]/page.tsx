@@ -3,6 +3,7 @@
 import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getEntryById, updateEntry, DiaryEntry } from '../../../lib/storage';
+import { fileToBase64 } from '../../../lib/utils'; // Utility for Base64 conversion
 import { Button } from '@/components/ui/button';
 
 type EditEntryPageProps = {
@@ -16,6 +17,8 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
   const [content, setContent] = useState('');
   const [images, setImages] = useState<File[]>([]); // New image files
   const [existingImages, setExistingImages] = useState<string[]>([]); // Current image URLs
+  const [audio, setAudio] = useState<File | null>(null); // New audio file
+  const [existingAudio, setExistingAudio] = useState<string | null>(null); // Current audio Base64
   const router = useRouter();
 
   useEffect(() => {
@@ -26,6 +29,7 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
           setTitle(entry.title);
           setContent(entry.content);
           setExistingImages(entry.imageUrls); // Load existing image URLs
+          setExistingAudio(entry.audioUrl || null); // Load existing audio
         } else {
           alert('Entry not found.');
           router.push('/');
@@ -45,8 +49,18 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
     }
   };
 
+  const handleAudioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setAudio(e.target.files[0]); // Store the selected audio file
+    }
+  };
+
   const handleRemoveImage = (index: number) => {
     setExistingImages((prev) => prev.filter((_, i) => i !== index)); // Remove image by index
+  };
+
+  const handleRemoveAudio = () => {
+    setExistingAudio(null); // Remove the existing audio
   };
 
   const handleUpdate = async () => {
@@ -56,6 +70,7 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
     }
 
     const imageUrls = await uploadImages(images); // Upload new images
+    const audioUrl = audio ? await fileToBase64(audio) : existingAudio; // Convert audio to Base64 or keep the existing one
 
     const updatedEntry: DiaryEntry = {
       id,
@@ -63,6 +78,7 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
       content,
       date: new Date().toISOString(),
       imageUrls: [...existingImages, ...imageUrls], // Combine existing and new images
+      audioUrl, // Updated or existing audio
     };
 
     try {
@@ -134,6 +150,37 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
           </div>
         </div>
       )}
+
+      {/* Audio Section */}
+      <label
+        htmlFor="audio-upload"
+        className="block mt-6 mb-2 text-lg font-medium text-gray-700"
+      >
+        Upload New Audio
+      </label>
+      <input
+        id="audio-upload"
+        type="file"
+        accept="audio/*"
+        onChange={handleAudioChange}
+        className="block w-full px-3 py-2 mt-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        title="Select an audio file to upload"
+      />
+      {existingAudio && (
+        <div className="mt-4">
+          <h2 className="mb-2 text-lg font-medium">Existing Audio</h2>
+          <audio controls src={existingAudio} className="w-full rounded">
+            Your browser does not support the audio element.
+          </audio>
+          <button
+            onClick={handleRemoveAudio}
+            className="px-2 py-1 mt-2 text-sm text-white bg-red-500 rounded-full hover:bg-red-600"
+          >
+            Remove Audio
+          </button>
+        </div>
+      )}
+
       <Button
         onClick={handleUpdate}
         className="px-4 py-2 mt-6 text-white rounded bg-primary"

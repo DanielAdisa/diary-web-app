@@ -109,6 +109,20 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
         </div>
       )}
 
+      {/* Audio Playback */}
+      {entry.audioUrl && (
+        <div className="mt-6">
+          <h2 className="mb-2 text-xl font-bold">Audio Recording:</h2>
+          <audio
+            controls
+            src={entry.audioUrl}
+            className="w-full p-4 bg-gray-200 rounded shadow-md"
+          >
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+      )}
+
       <p className="h-auto p-4 mt-6 rounded-sm text-stone-100 bg-stone-950">{entry.content}</p>
 
       <div className="flex items-center justify-between w-full gap-4 mt-10">

@@ -7,6 +7,7 @@ export type DiaryEntry = {
   content: string;
   date: string;
   imageUrls: string[]; // Array of Base64 image strings
+  audioUrl?: string | null;
 };
 
 // Save a new entry with images
