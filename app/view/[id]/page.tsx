@@ -66,7 +66,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
   if (!entry) return <div>Loading...</div>;
 
   return (
-    <div className="p-4">
+    <div className="md:p-4 " >
       <h1 className="mb-4 text-3xl font-bold text-center">{entry.title}</h1>
       <p className="mb-4 text-gray-600">{new Date(entry.date).toLocaleDateString()}</p>
 
@@ -78,18 +78,18 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
             alt={`Diary Entry Image ${currentImageIndex + 1}`}
             width={800}
             height={500}
-            className="w-full h-auto mb-4 rounded-lg"
+            className="h-auto p-4 mb-4 rounded-lg md:w-full"
           />
           {/* Carousel navigation buttons */}
           <button
             onClick={goToPreviousImage}
-            className="absolute p-2 text-white transform -translate-y-1/2 bg-gray-800 rounded-full left-2 top-1/2"
+            className="absolute left-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:left-2 top-1/2"
           >
             &#10094;
           </button>
           <button
             onClick={goToNextImage}
-            className="absolute p-2 text-white transform -translate-y-1/2 bg-gray-800 rounded-full right-2 top-1/2"
+            className="absolute right-0 p-3 text-white transform -translate-y-1/2 bg-gray-800 rounded-full md:p-2 md:right-2 top-1/2"
           >
             &#10095;
           </button>
