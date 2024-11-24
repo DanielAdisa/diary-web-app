@@ -101,7 +101,7 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
           </Button>
 
           {/* Carousel indicators (dots) */}
-          <div className="absolute flex mb-4 space-x-4 transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
+          <div className="absolute flex mb-4 space-x-4 overflow-hidden transform -translate-x-1/2 h-fit -bottom-6 left-1/2">
             {entry.imageUrls.map((_, index) => (
               <span
                 key={index}
