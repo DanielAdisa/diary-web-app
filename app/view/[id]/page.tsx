@@ -116,10 +116,10 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
       <p className="h-auto p-4 mt-6 rounded-sm text-stone-100 bg-stone-950">{entry.content}</p>
 
       <div className="flex items-center justify-between w-full gap-4 mt-10">
-        <Button onClick={handleDelete} className="">
+        <Button onClick={handleDelete} className="bg-red-500 ">
           Delete Entry
         </Button>
-        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="">
+        <Button onClick={() => router.push(`/edit/${entry.id}`)} className="bg-green-500 ">
           Edit Entry
         </Button>
       </div>

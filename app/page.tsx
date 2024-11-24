@@ -29,7 +29,7 @@ export default function HomePage() {
       {entries.length === 0 ? (
         <p className="text-gray-600">No entries yet. Start by creating one!</p>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-2 md:grid-cols-1 lg:grid-cols-1">
           {entries.map((entry) => (
             <Link key={entry.id} href={`/view/${entry.id}`}>
               <EntryCard entry={entry} onDelete={handleDelete} />
