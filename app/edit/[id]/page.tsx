@@ -132,19 +132,19 @@ export default function EditEntryPage({ params }: EditEntryPageProps) {
           <h2 className="mb-2 text-lg font-medium">Existing Images</h2>
           <div className="flex flex-wrap gap-4">
             {existingImages.map((imageUrl, index) => (
-              <div key={index} className="relative w-24 h-24">
+              <div key={index} className="relative w-24 h-24 mt-4">
                 <img
                   src={imageUrl}
                   alt={`Existing Image ${index + 1}`}
                   className="object-cover w-full h-full rounded"
                 />
-                <button
+                <Button
                   onClick={() => handleRemoveImage(index)}
-                  className="absolute top-0 right-0 p-1 text-sm text-white bg-red-500 rounded-full hover:bg-red-600"
+                  className="absolute w-2 h-2 p-3 text-sm text-white bg-red-500 rounded-full -top-3 -right-3 hover:bg-red-600"
                   title="Remove this image"
                 >
                   ✕
-                </button>
+                </Button>
               </div>
             ))}
           </div>
