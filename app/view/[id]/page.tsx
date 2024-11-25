@@ -125,15 +125,15 @@ export default function ViewEntryPage({ params }: ViewEntryPageProps) {
         <div className="mt-6">
           <h2 className="mb-4 text-xl font-bold">Audio Recording:</h2>
           <div className="relative flex items-center w-full max-w-xl p-4 mx-auto shadow-lg rounded-xl bg-black/20">
-            <button
+            <Button
               onClick={togglePlayPause}
-              className="flex items-center justify-center w-12 h-12 p-2 font-bold text-white rounded-full shadow-lg bg-stone-900 focus:outline-none"
+              className="flex items-center justify-center w-10 h-10 p-4 font-bold text-white rounded-full shadow-lg bg-stone-900 focus:outline-none"
             >
               {audioPlaying ? <FaPause />   : <FaPlay />  }
-            </button>
+            </Button>
             <div
               className="relative flex-grow h-2 mx-4 rounded cursor-pointer bg-stone-300"
-              onClick={handleProgressClick}
+              onClick={handleProgressClick} 
             >
               <div
                 className="absolute top-0 left-0 h-full rounded bg-stone-800"

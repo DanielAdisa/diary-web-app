@@ -12,7 +12,7 @@ export default function EntryCard({ entry, onDelete }: EntryCardProps) {
   const imageUrls = Array.isArray(entry.imageUrls) ? entry.imageUrls : [];
 
   return (
-    <div className="p-4 bg-white rounded-[20px] shadow-xl overflow-clip ">
+    <div className="p-4 bg-white rounded-[20px] shadow-md overflow-clip ">
       <h2 className="text-xl font-bold">{entry.title}</h2>
       <p className="text-sm text-gray-500">{new Date(entry.date).toLocaleDateString()}</p>
       
