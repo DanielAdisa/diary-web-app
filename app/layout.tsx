@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Inter } from 'next/font/google';
 import "./globals.css";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import { ThemeProvider } from "@/components/theme-provider";
-import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 // Modern font using Google Fonts for reliable cross-platform compatibility
 const inter = Inter({
@@ -40,15 +40,13 @@ export default function RootLayout({
           <div className="fixed inset-0 bg-[url('/noise.svg')] opacity-[0.015] dark:opacity-[0.03] pointer-events-none z-0"></div>
           
           {/* Gradient accents */}
-          <div className="fixed -top-40 -right-40 w-80 h-80 bg-primary/20 rounded-full blur-3xl opacity-20 dark:opacity-10 pointer-events-none"></div>
-          <div className="fixed -bottom-40 -left-40 w-80 h-80 bg-accent/20 rounded-full blur-3xl opacity-20 dark:opacity-10 pointer-events-none"></div>
+          <div className="fixed rounded-full pointer-events-none -top-40 -right-40 w-80 h-80 bg-primary/20 blur-3xl opacity-20 dark:opacity-10"></div>
+          <div className="fixed rounded-full pointer-events-none -bottom-40 -left-40 w-80 h-80 bg-accent/20 blur-3xl opacity-20 dark:opacity-10"></div>
           
-          <main className="container relative flex-grow p-4 mx-auto z-1 pt-6 md:pt-10">
-            {/* Global theme toggle in top right */}
-            <div className="absolute z-10 top-6 right-6">
-              <ThemeToggle />
-            </div>
-            
+          {/* Navbar displayed on all routes */}
+          <Navbar />
+          
+          <main className="container relative flex-grow p-4 pt-6 mx-auto z-1 md:pt-10">
             {children}
           </main>
           <Footer />

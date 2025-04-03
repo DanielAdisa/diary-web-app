@@ -5,7 +5,7 @@ import EntryCard from '../components/EntryCard';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Swal from 'sweetalert2';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   RiAddLine, 
   RiBookOpenLine, 
@@ -13,21 +13,65 @@ import {
   RiQuillPenLine,
   RiSearchLine,
   RiMoonClearLine,
-  RiSunLine
+  RiSunLine,
+  RiFilterLine,
+  RiCalendarLine,
+  RiSortAsc,
+  RiSortDesc,
+  RiArchiveLine,
+  RiPriceTag3Line
 } from 'react-icons/ri';
 import { useTheme } from 'next-themes';
+
+type SortOption = 'newest' | 'oldest' | 'alphabetical';
+type FilterOption = 'all' | 'hasImage' | 'hasAudio';
 
 export default function HomePage() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState<SortOption>('newest');
+  const [filterBy, setFilterBy] = useState<FilterOption>('all');
+  const [showSortOptions, setShowSortOptions] = useState(false);
+  const [showFilterOptions, setShowFilterOptions] = useState(false);
+  const [stats, setStats] = useState({
+    total: 0,
+    withImages: 0,
+    withAudio: 0,
+    thisMonth: 0
+  });
   const { theme, setTheme } = useTheme();
   
   const fetchEntries = async () => {
     setIsLoading(true);
-    const fetchedEntries = await getAllEntries();
-    setEntries(fetchedEntries);
-    setIsLoading(false);
+    try {
+      const fetchedEntries = await getAllEntries();
+      setEntries(fetchedEntries);
+      
+      // Calculate stats
+      const currentMonth = new Date().getMonth();
+      const currentYear = new Date().getFullYear();
+      setStats({
+        total: fetchedEntries.length,
+        withImages: fetchedEntries.filter(entry => entry.imageUrls?.length > 0).length,
+        withAudio: fetchedEntries.filter(entry => entry.audioUrl).length,
+        thisMonth: fetchedEntries.filter(entry => {
+          const entryDate = new Date(entry.date);
+          return entryDate.getMonth() === currentMonth && entryDate.getFullYear() === currentYear;
+        }).length
+      });
+    } catch (error) {
+      console.error('Error fetching entries:', error);
+      // Show error message
+      Swal.fire({
+        title: 'Error',
+        text: 'Failed to load your entries',
+        icon: 'error',
+        confirmButtonColor: 'hsl(var(--primary))'
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   useEffect(() => {
@@ -75,13 +119,43 @@ export default function HomePage() {
     }
   };
   
-  // Filter entries based on search query
-  const filteredEntries = searchQuery 
-    ? entries.filter(entry => 
-        entry.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-        entry.content.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : entries;
+  // Sort entries
+  const sortEntries = (entries: DiaryEntry[]) => {
+    switch (sortBy) {
+      case 'newest':
+        return [...entries].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      case 'oldest':
+        return [...entries].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      case 'alphabetical':
+        return [...entries].sort((a, b) => a.title.localeCompare(b.title));
+      default:
+        return entries;
+    }
+  };
+  
+  // Filter entries
+  const filterEntries = (entries: DiaryEntry[]) => {
+    switch (filterBy) {
+      case 'hasImage':
+        return entries.filter(entry => entry.imageUrls?.length > 0);
+      case 'hasAudio':
+        return entries.filter(entry => entry.audioUrl);
+      default:
+        return entries;
+    }
+  };
+  
+  // Filter entries based on search query and apply sorting
+  const processedEntries = sortEntries(
+    filterEntries(
+      searchQuery 
+        ? entries.filter(entry => 
+            entry.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+            entry.content.toLowerCase().includes(searchQuery.toLowerCase())
+          )
+        : entries
+    )
+  );
   
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -98,6 +172,60 @@ export default function HomePage() {
     visible: { y: 0, opacity: 1 }
   };
 
+  // Stats cards row
+  const renderStatsCards = () => (
+    <motion.div 
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3, duration: 0.5 }}
+      className="grid grid-cols-2 gap-4 mb-8 sm:grid-cols-4"
+    >
+      {/* Total Entries */}
+      <div className="overflow-hidden transition-colors border rounded-xl bg-card/50 border-border/30 backdrop-blur-sm hover:border-primary/30 group">
+        <div className="p-4">
+          <div className="flex items-center justify-center p-2 mb-2 transition-colors rounded-full w-9 h-9 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground">
+            <RiBookletLine size={18} />
+          </div>
+          <p className="text-sm text-muted-foreground">Total Entries</p>
+          <h4 className="text-2xl font-bold text-foreground">{stats.total}</h4>
+        </div>
+      </div>
+      
+      {/* This Month */}
+      <div className="overflow-hidden transition-colors border rounded-xl bg-card/50 border-border/30 backdrop-blur-sm hover:border-primary/30 group">
+        <div className="p-4">
+          <div className="flex items-center justify-center p-2 mb-2 transition-colors rounded-full w-9 h-9 bg-accent/10 text-accent group-hover:bg-accent group-hover:text-accent-foreground">
+            <RiCalendarLine size={18} />
+          </div>
+          <p className="text-sm text-muted-foreground">This Month</p>
+          <h4 className="text-2xl font-bold text-foreground">{stats.thisMonth}</h4>
+        </div>
+      </div>
+      
+      {/* With Images */}
+      <div className="overflow-hidden transition-colors border rounded-xl bg-card/50 border-border/30 backdrop-blur-sm hover:border-primary/30 group">
+        <div className="p-4">
+          <div className="flex items-center justify-center p-2 mb-2 transition-colors rounded-full w-9 h-9 bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground">
+            <RiBookOpenLine size={18} />
+          </div>
+          <p className="text-sm text-muted-foreground">With Images</p>
+          <h4 className="text-2xl font-bold text-foreground">{stats.withImages}</h4>
+        </div>
+      </div>
+      
+      {/* With Audio */}
+      <div className="overflow-hidden transition-colors border rounded-xl bg-card/50 border-border/30 backdrop-blur-sm hover:border-primary/30 group">
+        <div className="p-4">
+          <div className="flex items-center justify-center p-2 mb-2 transition-colors rounded-full w-9 h-9 bg-accent/10 text-accent group-hover:bg-accent group-hover:text-accent-foreground">
+            <RiArchiveLine size={18} />
+          </div>
+          <p className="text-sm text-muted-foreground">With Audio</p>
+          <h4 className="text-2xl font-bold text-foreground">{stats.withAudio}</h4>
+        </div>
+      </div>
+    </motion.div>
+  );
+
   return (
     <div className="w-full mx-auto max-w-7xl">
       {/* Hero Section with 2025 Glassmorphism Design */}
@@ -109,20 +237,10 @@ export default function HomePage() {
       >
         {/* Abstract animated background elements */}
         <div className="absolute top-0 left-0 w-40 h-40 rounded-full bg-primary/10 blur-3xl animate-float"></div>
-        <div className="absolute bottom-0 right-0 w-60 h-60 rounded-full bg-accent/10 blur-3xl animate-glow-pulse"></div>
+        <div className="absolute bottom-0 right-0 rounded-full w-60 h-60 bg-accent/10 blur-3xl animate-glow-pulse"></div>
         
         {/* Subtle grid pattern */}
         <div className="absolute inset-0 grid-pattern opacity-30"></div>
-        
-        {/* Theme Toggle */}
-        <motion.button
-          whileTap={{ scale: 0.97 }}
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          className="absolute flex items-center justify-center p-3 rounded-full right-5 top-5 backdrop-blur-sm bg-white/10 border border-white/20 hover:bg-white/20"
-          aria-label="Toggle theme"
-        >
-          {theme === 'dark' ? <RiSunLine size={18} /> : <RiMoonClearLine size={18} />}
-        </motion.button>
         
         <div className="relative z-10 flex flex-col items-start p-8 md:p-10">
           <div className="p-2.5 mb-5 rounded-2xl flex items-center justify-center bg-white/15 dark:bg-white/10 backdrop-blur-sm border border-white/20 shadow-inner">
@@ -133,7 +251,7 @@ export default function HomePage() {
             My Journal
           </h1>
           
-          <p className="max-w-2xl mb-7 text-lg text-muted-foreground md:text-xl">
+          <p className="max-w-2xl text-lg mb-7 text-muted-foreground md:text-xl">
             Capture your thoughts, memories, and inspirations in one beautiful place.
           </p>
           
@@ -149,9 +267,36 @@ export default function HomePage() {
                 >→</motion.span>
               </Button>
             </Link>
+
+            <Button 
+              variant="outline" 
+              className="gap-2 px-5 py-6 font-medium border-white/20 bg-white/10 backdrop-blur-sm hover:bg-white/20 rounded-xl"
+              onClick={() => {
+                if (stats.total > 0) {
+                  // Get a random entry ID from available entries
+                  const randomIndex = Math.floor(Math.random() * entries.length);
+                  const randomId = entries[randomIndex].id;
+                  // Navigate to the random entry
+                  window.location.href = `/view/${randomId}`;
+                } else {
+                  Swal.fire({
+                    title: 'No entries',
+                    text: 'Create your first entry to use this feature',
+                    icon: 'info',
+                    confirmButtonColor: 'hsl(var(--primary))'
+                  });
+                }
+              }}
+            >
+              <RiBookOpenLine size={18} />
+              Random Entry
+            </Button>
           </div>
         </div>
       </motion.div>
+      
+      {/* Statistics Cards */}
+      {!isLoading && entries.length > 0 && renderStatsCards()}
       
       {/* Search & Entries Section */}
       <div className="mb-8">
@@ -159,39 +304,171 @@ export default function HomePage() {
           <h2 className="flex items-center text-2xl font-bold text-foreground">
             Your Entries
             <span className="px-3 py-1 ml-3 text-sm font-medium rounded-full bg-primary/10 text-primary">
-              {entries.length}
+              {processedEntries.length}
             </span>
           </h2>
           
-          <div className="relative max-w-xs">
-            <RiSearchLine className="absolute transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search entries..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full py-2 pl-10 pr-4 text-sm transition-all bg-transparent border rounded-lg border-border focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none"
-            />
+          <div className="flex flex-wrap gap-3 lg:gap-4">
+            {/* Search input */}
+            <div className="relative md:w-64">
+              <RiSearchLine className="absolute transform -translate-y-1/2 left-3 top-1/2 text-muted-foreground" size={18} />
+              <input 
+                type="text" 
+                placeholder="Search entries..." 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full py-2 pl-10 pr-4 text-sm transition-all bg-transparent border rounded-lg border-border focus:border-primary focus:ring-1 focus:ring-primary/20 focus:outline-none"
+              />
+            </div>
+            
+            {/* Filter dropdown */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 h-9"
+                onClick={() => {
+                  setShowFilterOptions(!showFilterOptions);
+                  setShowSortOptions(false);
+                }}
+              >
+                <RiFilterLine size={18} />
+                <span className="hidden sm:inline">Filter</span>
+                {filterBy !== 'all' && <span className="px-1.5 py-0.5 text-xs rounded-full bg-primary/20 text-primary">1</span>}
+              </Button>
+              
+              <AnimatePresence>
+                {showFilterOptions && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 z-50 mt-2 overflow-hidden border shadow-lg bg-card/90 backdrop-blur-sm border-border rounded-xl w-44"
+                  >
+                    <div className="py-1">
+                      <button
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-primary/10 ${filterBy === 'all' ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                        onClick={() => {
+                          setFilterBy('all');
+                          setShowFilterOptions(false);
+                        }}
+                      >
+                        All Entries
+                      </button>
+                      <button
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-primary/10 ${filterBy === 'hasImage' ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                        onClick={() => {
+                          setFilterBy('hasImage');
+                          setShowFilterOptions(false);
+                        }}
+                      >
+                        With Images
+                      </button>
+                      <button
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-primary/10 ${filterBy === 'hasAudio' ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                        onClick={() => {
+                          setFilterBy('hasAudio');
+                          setShowFilterOptions(false);
+                        }}
+                      >
+                        With Audio
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+            
+            {/* Sort dropdown */}
+            <div className="relative">
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2 h-9"
+                onClick={() => {
+                  setShowSortOptions(!showSortOptions);
+                  setShowFilterOptions(false);
+                }}
+              >
+                {sortBy === 'newest' ? <RiSortDesc size={18} /> : <RiSortAsc size={18} />}
+                <span className="hidden sm:inline">Sort</span>
+              </Button>
+              
+              <AnimatePresence>
+                {showSortOptions && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 10 }}
+                    className="absolute right-0 z-50 mt-2 overflow-hidden border shadow-lg bg-card/90 backdrop-blur-sm border-border rounded-xl w-44"
+                  >
+                    <div className="py-1">
+                      <button
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-primary/10 ${sortBy === 'newest' ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                        onClick={() => {
+                          setSortBy('newest');
+                          setShowSortOptions(false);
+                        }}
+                      >
+                        Newest First
+                      </button>
+                      <button
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-primary/10 ${sortBy === 'oldest' ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                        onClick={() => {
+                          setSortBy('oldest');
+                          setShowSortOptions(false);
+                        }}
+                      >
+                        Oldest First
+                      </button>
+                      <button
+                        className={`w-full px-4 py-2 text-left text-sm hover:bg-primary/10 ${sortBy === 'alphabetical' ? 'bg-primary/10 text-primary font-medium' : ''}`}
+                        onClick={() => {
+                          setSortBy('alphabetical');
+                          setShowSortOptions(false);
+                        }}
+                      >
+                        Alphabetical
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-40">
-            <div className="w-10 h-10 rounded-full border-2 border-primary/30 border-t-primary animate-spin"></div>
+          <div className="flex flex-col items-center justify-center border h-60 rounded-xl border-border bg-card/30 backdrop-blur-sm">
+            <div className="w-12 h-12 mb-4 border-2 rounded-full border-primary/30 border-t-primary animate-spin"></div>
+            <p className="text-muted-foreground">Loading your journal entries...</p>
           </div>
-        ) : filteredEntries.length === 0 && searchQuery ? (
+        ) : processedEntries.length === 0 && searchQuery ? (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="p-8 text-center border bg-card/50 border-border rounded-xl"
+            className="p-12 text-center border bg-card/50 border-border rounded-xl"
           >
             <div className="flex flex-col items-center justify-center">
-              <RiSearchLine className="mb-3 text-muted-foreground" size={32} />
+              <div className="p-4 mb-4 rounded-full bg-secondary/50">
+                <RiSearchLine className="text-muted-foreground" size={32} />
+              </div>
               <h3 className="mb-2 text-xl font-medium text-foreground">No matching entries</h3>
-              <p className="mb-4 text-muted-foreground">Try searching with different keywords</p>
-              <Button variant="outline" onClick={() => setSearchQuery('')}>
-                Clear search
-              </Button>
+              <p className="mb-6 text-muted-foreground">
+                {filterBy !== 'all' 
+                  ? `No entries match your search query with the current filter.` 
+                  : `Try searching with different keywords`}
+              </p>
+              <div className="flex gap-3">
+                {filterBy !== 'all' && (
+                  <Button variant="secondary" onClick={() => setFilterBy('all')}>
+                    Clear Filter
+                  </Button>
+                )}
+                <Button variant="outline" onClick={() => setSearchQuery('')}>
+                  Clear Search
+                </Button>
+              </div>
             </div>
           </motion.div>
         ) : entries.length === 0 ? (
@@ -199,7 +476,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
-            className="p-8 text-center bg-gradient-glass backdrop-blur-sm border border-white/10 rounded-xl"
+            className="p-12 text-center border bg-gradient-glass backdrop-blur-sm border-white/10 rounded-xl"
           >
             <div className="flex flex-col items-center justify-center">
               <div className="flex items-center justify-center w-20 h-20 mb-5 rounded-full bg-primary/10">
@@ -215,27 +492,53 @@ export default function HomePage() {
             </div>
           </motion.div>
         ) : (
-          <motion.div 
-            variants={containerVariants}
-            initial="hidden"
-            animate="visible"
-            className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-          >
-            {filteredEntries.map((entry) => (
-              <motion.div
-                key={entry.id}
-                variants={itemVariants}
+          <>
+            <AnimatePresence mode="wait">
+              <motion.div 
+                key={`${sortBy}-${filterBy}-${searchQuery}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                variants={containerVariants}
+                className="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
               >
-                <Link href={`/view/${entry.id}`} className="block h-full">
-                  <EntryCard entry={entry} onDelete={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleDelete(entry.id);
-                  }} />
-                </Link>
+                {processedEntries.map((entry) => (
+                  <motion.div
+                    key={entry.id}
+                    layout
+                    variants={itemVariants}
+                  >
+                    <Link href={`/view/${entry.id}`} className="block h-full">
+                      <EntryCard entry={entry} onDelete={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDelete(entry.id);
+                      }} />
+                    </Link>
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
+            </AnimatePresence>
+            
+            {/* No results with filter enabled */}
+            {processedEntries.length === 0 && filterBy !== 'all' && (
+              <motion.div 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="p-8 mt-8 text-center border bg-card/50 border-border rounded-xl"
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <RiFilterLine className="mb-3 text-muted-foreground" size={32} />
+                  <h3 className="mb-2 text-xl font-medium text-foreground">No entries match your filter</h3>
+                  <p className="mb-4 text-muted-foreground">Try selecting a different filter option</p>
+                  <Button variant="outline" onClick={() => setFilterBy('all')}>
+                    Clear Filter
+                  </Button>
+                </div>
+              </motion.div>
+            )}
+          </>
         )}
       </div>
       
