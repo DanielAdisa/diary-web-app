@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -34,6 +34,14 @@ type DiaryEntryData = {
 type ViewMode = 'picture' | 'entry';
 
 export default function SharedEntryViewPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SharedEntryViewContent />
+    </Suspense>
+  );
+}
+
+function SharedEntryViewContent() {
   const searchParams = useSearchParams();
   const { theme } = useTheme();
   const router = useRouter();
